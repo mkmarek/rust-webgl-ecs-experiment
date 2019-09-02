@@ -1,7 +1,7 @@
 use crate::application::*;
 use crate::base::*;
+use crate::components::camera_component::CameraComponent;
 use crate::components::mesh_renderer_component::MeshRendererComponent;
-use std::any::Any;
 use crate::store::shader_store;
 use crate::store::material_store;
 use crate::store::mesh_store;
@@ -12,10 +12,11 @@ pub struct RenderSystem {
 }
 
 impl System for RenderSystem {
-    fn execute(&self, app: &Application) {
+    fn execute(&self, app: &mut Application) {
         let entities = app.get_with_components("mesh_renderer");
+        //let camera = CameraComponent::main(app);
 
-        for entity in &entities {
+        for entity in entities {
             let component: &MeshRendererComponent = match entity.get_component("mesh_renderer") {
                 Some(x) => match x.as_any().downcast_ref::<MeshRendererComponent>() {
                     Some(b) => b,
@@ -33,17 +34,17 @@ impl System for RenderSystem {
             unsafe {
                 let vert_array = js_sys::Float32Array::view(&mesh.vertices);
 
-                &app.context.buffer_data_with_array_buffer_view(
+                app.context.buffer_data_with_array_buffer_view(
                     WebGlRenderingContext::ARRAY_BUFFER,
                     &vert_array,
                     WebGlRenderingContext::STATIC_DRAW,
                 );
             }
 
-            &app.context.vertex_attrib_pointer_with_i32(0, 3, WebGlRenderingContext::FLOAT, false, 0, 0);
-            &app.context.enable_vertex_attrib_array(0);
+            app.context.vertex_attrib_pointer_with_i32(0, 3, WebGlRenderingContext::FLOAT, false, 0, 0);
+            app.context.enable_vertex_attrib_array(0);
 
-            &app.context.draw_arrays(
+            app.context.draw_arrays(
                 WebGlRenderingContext::TRIANGLES,
                 0,
                 (mesh.vertices.len() / 3) as i32,

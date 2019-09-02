@@ -4,6 +4,7 @@ use web_sys::{WebGlRenderingContext};
 
 pub struct Application {
     pub document: web_sys::Document,
+    pub canvas: web_sys::HtmlCanvasElement,
     pub context: WebGlRenderingContext,
     pub entities: Vec<Entity>,
     pub systems: Vec<Box<System>>
@@ -28,23 +29,30 @@ impl Application {
 
         self.entities.push(entity);
     }
-    pub fn get_with_components(&self, components: &str) -> Vec<&Entity> {
+    pub fn get_with_components(&mut self, components: &str) -> Vec<&mut Entity> {
         let component_types: Vec<&str> = components.split(',').collect();
-        let mut result = Vec::new();
+        let mut result: Vec<&mut Entity> = Vec::new();
         
-        for entity in &self.entities {
+        for entity in &mut self.entities {
             let mut contains_all = true;
+            let entityReference: &mut Entity = entity;
+
             for component in &component_types {
-                if !entity.contains_component(&component.to_string()) {
+                if !entityReference.contains_component(&component.to_string()) {
                     contains_all = false;
                 }
             }
 
             if contains_all == true {
-                result.push(entity);
+                result.push(entityReference);
             }
         }
 
         return result;
+    }
+    pub fn execute_systems(&mut self) {
+        for system in self.systems {
+            system.execute(self);
+        }
     }
 }

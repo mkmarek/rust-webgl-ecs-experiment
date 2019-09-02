@@ -21,6 +21,7 @@ lto = true
 #default = ["wee_alloc"]
 
 [dependencies]
+nalgebra = "0.18"
 uuid = { version = "0.6", features = ["serde", "v4"] }
 js-sys = "0.3.24"
 # The `wasm-bindgen` crate provides the bare minimum functionality needed

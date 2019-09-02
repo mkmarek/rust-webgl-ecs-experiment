@@ -89,10 +89,10 @@ pub struct Mesh {
 }
 
 pub trait System {
-    fn execute(&self, app: &Application);
+    fn execute(&self, app: &mut Application);
 }
 
-pub trait Component {
+pub trait Component: Any {
     fn get_name(&self) -> String;
     fn is(&self, name: &str) -> bool;
     fn as_any(&self) -> &dyn Any;
